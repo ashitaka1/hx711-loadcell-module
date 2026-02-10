@@ -122,6 +122,7 @@ python3 src/main.py
 10. **Bare except clause (main.py:75-78)** - Silently swallows all errors including KeyboardInterrupt
 11. **Wrong error message (hx711.py:355)** - Says "_A()" in set_reference_unit_B()
 12. **No calibration validation** - calibration_slope could be 0
+13. **BCM pin numbering instead of physical** - Uses BCM/GPIO logical numbering which is less intuitive than physical pin numbers; should use BOARD mode instead of BCM mode
 
 ### MINOR ISSUES
 

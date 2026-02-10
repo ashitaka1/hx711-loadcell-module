@@ -33,6 +33,8 @@ A Viam module for HX711 load cell amplifiers, providing calibrated force and wei
 }
 ```
 
+**Note:** Pin numbers use BCM/GPIO logical numbering. For example, GPIO 5 (BCM) is physical pin 29 on a Raspberry Pi.
+
 ## Returns
 
 - `raw_value`: Raw ADC reading
