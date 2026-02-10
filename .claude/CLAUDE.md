@@ -102,23 +102,33 @@ python3 src/main.py
    - `readLock.acquire()` without try/finally means lock never released on exception
    - `while not self.is_ready()` has no timeout, can hang forever if hardware fails
 
-6. **GPIO Resource Leak (main.py:109-111)**
+6. **Same Deadlock Pattern in power_down/power_up (hx711.py:376-388, 394-404)**
+   - Both methods acquire `readLock` without try/finally protection
+   - Exception during GPIO operations leaves lock permanently held
+
+7. **read_median TypeError Crash (hx711.py:219)**
+   - `midpoint = len(valueList) / 2` returns float in Python 3
+   - `valueList[midpoint:midpoint+2]` requires integer indices
+   - Crashes with TypeError whenever `times` is even (2, 4, 6, etc.)
+   - Fix: use `// 2` for integer division
+
+8. **GPIO Resource Leak (main.py:109-111)**
    - `close()` doesn't call `GPIO.cleanup()`
    - Causes warnings on restart, potential conflicts
 
 ### MEDIUM PRIORITY
 
-7. **No config validation** - Missing data_pin/clock_pin causes cryptic KeyError
-8. **Bare except clause (main.py:75-78)** - Silently swallows all errors including KeyboardInterrupt
-9. **Wrong error message (hx711.py:355)** - Says "_A()" in set_reference_unit_B()
-10. **No calibration validation** - calibration_slope could be 0
+9. **No config validation** - Missing data_pin/clock_pin causes cryptic KeyError
+10. **Bare except clause (main.py:75-78)** - Silently swallows all errors including KeyboardInterrupt
+11. **Wrong error message (hx711.py:355)** - Says "_A()" in set_reference_unit_B()
+12. **No calibration validation** - calibration_slope could be 0
 
 ### MINOR ISSUES
 
 - Unreachable `return` after `raise` (hx711.py:347, 356)
-- Float division where int expected (hx711.py:219)
 - Error returned as dict instead of exception (main.py:106-107)
 - Invalid gain values silently ignored (hx711.py:50-56)
+- **Dead code: output_unit field (main.py:31, 63-72)** - Field is set but never used; `get_readings()` always returns all available values regardless of setting
 
 ## Testing Calibration
 
